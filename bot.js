@@ -10,11 +10,16 @@ const bot = new Telegraf(BOT_TOKEN);
 const app = express();
 
 app.use(express.json());
+
+// 🟢 ফিক্সড পাথ যাতে 'Not Found' না আসে
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 console.log("🚀 Mini App Engine Active...");
 
-// আপনার রেন্ডারের লাইভ URL এখানে বসাবেন (যেমন: https://ppm-miniapp.onrender.com)
 const RENDER_URL = process.env.RENDER_URL || "https://ppm-bot-auto.onrender.com";
 
 bot.start(async (ctx) => {
@@ -36,8 +41,6 @@ app.post("/api/auth/google", async (req, res) => {
     try {
         const { token, userId } = req.body;
         console.log(`[GOOGLE LOGIN] Received Token for Telegram ID: ${userId}`);
-        
-        // সফল রেসপন্স
         return res.json({ ok: true, message: "Connected successfully!" });
     } catch (e) {
         return res.status(500).json({ ok: false, error: e.message });
